@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #wrapper {
+            width: 100vw;
+            height: 100vh;
+            position: relative
+        }
+
+        #canvas {
+            width: 720;
+            height: 1280;
+            position: fixed;
+        }
+
+        #video {
+            position: fixed;
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        #overlay {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-image: url(overlay.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+        }
+
+        #capture-btn {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            border: 5px solid black;
+            outline: 5px dashed white;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-25px);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <canvas id="canvas" width="720" height="1280"></canvas>
+        <video id="video" autoplay></video>
+        <div id="overlay"></div>
+        <button id="capture-btn"></button>
+    </div>
+</body>
+
+<script type="text/javascript">
+    const canvas = document.getElementById('canvas');
+    const video = document.getElementById("video");
+    const captureButton = document.getElementById('capture-btn');
+
+    const navigator = window.navigator;
+
+    console.log(canvas.width)
+    console.log(canvas.height)
+
+    console.log(window.innerWidth)
+    console.log(window.innerHeight)
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(e => {
+            console.log(e);
+        })
+
+    captureButton.addEventListener('click', function () {
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Get the image data URL from the canvas
+        const imageDataURL = canvas.toDataURL('image/png');
+        console.log(imageDataURL)
+
+        const imageWindow = window.open();
+        imageWindow.document.write('<img src="' + imageDataURL + '" alt="Captured Image"/>');
+    });
+</script>
+
+</html>
